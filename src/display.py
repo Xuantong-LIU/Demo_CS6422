@@ -56,6 +56,7 @@ def update_status(layout):
     status_table.add_row(f"Alarm Rate: {config.alarm_rate}")
     status_table.add_row(f"Fraction Value: {config.fraction_value}")
     status_table.add_row(f"Low-usage Rate: {config.low_usage_rate}")
+    status_table.add_row(f"Overbooking: {config.overbooking}")
 
     layout["status"].update(
         Panel(status_table, title="System Status", border_style="blue"))

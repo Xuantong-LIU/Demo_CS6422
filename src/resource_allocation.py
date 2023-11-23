@@ -20,10 +20,6 @@ def process_request(user, request_cpu):
 
     # 当前不在overbooking 但执行完request有可能进入
     else:
-        # if request_cpu + config.allocated_cpu < config.alarm_rate:
-        #     allocated_cpu_single = request_cpu # 其实啥也没做 ===
-
-        # 不处于overbooking mode 但是有一种临界情况：下一次进入overbooking(这里讨论两种情况)
         if config.allocated_cpu + allocated_cpu_single >= config.alarm_rate:
             allocated_cpu_single *= config.fraction_value
             config.overbooking = True
@@ -64,15 +60,10 @@ def process_release(user, release_cpu):
             if config.allocated_cpu - release_cpu <= config.low_usage_rate:
                 config.overbooking = False
 
-        # overbooking = false
-        # release_cpu = release_cpu
-
-        # 进行release 操作
-        # 修改 remaincpu value
+    
         config.remaining_cpu += release_cpu
         config.allocated_cpu -= release_cpu
 
-        # 将这组数据从list中移除
         config.items_list.remove(item)
 
         # 返回release 成功结果
