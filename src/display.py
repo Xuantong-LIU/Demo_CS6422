@@ -80,7 +80,7 @@ def update_status(layout, recv_buffer):
         Panel(status_table, title="System Status", border_style="blue"))
     
     layout["graph"].update(
-                draw_graph_panel(recv_buffer, "Graph", "red")
+                draw_graph_panel(recv_buffer, "Allocated CPU", "red")
             )
 
 
