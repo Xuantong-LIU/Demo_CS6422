@@ -10,6 +10,7 @@ from resource_allocation import process_request, process_release
 import config
 import asciichartpy as acp
 
+
 def create_layout():
     layout = Layout()
 
@@ -57,7 +58,8 @@ def update_header(layout):
 
 def draw_graph_panel(sent_data, graph_name, color):
     return Panel(
-        Align.left(acp.plot(sent_data, {'min': 0, 'height': 10}), vertical="bottom"),
+        Align.left(
+            acp.plot(sent_data, {'min': 0, 'height': 10}), vertical="bottom"),
         title=f"[bold][yellow]{graph_name}[/bold][/yellow]",
         border_style=color,
         style="green",
@@ -68,8 +70,8 @@ def update_status(layout, recv_buffer):
     status_table = Table.grid(expand=True)
     status_table.add_column(justify="left")
     status_table.add_row(f"Total CPU: {config.TOTAL_CPU}")
-    status_table.add_row(f"Remaining CPU: {config.remaining_cpu}")
-    status_table.add_row(f"Allocated CPU: {config.allocated_cpu}")
+    status_table.add_row(f"Remaining CPU: {config.remaining_cpu:.2f}")
+    status_table.add_row(f"Allocated CPU: {config.allocated_cpu:.2f}")
     status_table.add_row(f"Alarm Rate: {config.alarm_rate}")
     status_table.add_row(f"Fraction Value: {config.fraction_value}")
     status_table.add_row(f"Low-usage Rate: {config.low_usage_rate}")
@@ -78,10 +80,10 @@ def update_status(layout, recv_buffer):
 
     layout["status"].update(
         Panel(status_table, title="System Status", border_style="blue"))
-    
+
     layout["graph"].update(
-                draw_graph_panel(recv_buffer, "Allocated CPU", "red")
-            )
+        draw_graph_panel(recv_buffer, "Allocated CPU", "red")
+    )
 
 
 def process_commands(cmds, layout):
