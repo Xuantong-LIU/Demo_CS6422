@@ -8,7 +8,7 @@ if __name__ == "__main__":
     console = Console()
     layout = create_layout()
     update_header(layout)
-    update_status(layout)
+    update_status(layout, [])
 
     with Live(layout, console=console, refresh_per_second=4):
         file_path = "data/scen1-2.txt"

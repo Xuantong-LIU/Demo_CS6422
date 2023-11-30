@@ -5,8 +5,12 @@ from rich.console import Console
 from rich.layout import Layout
 from rich.panel import Panel
 from rich.live import Live
+from rich.align import Align
 from resource_allocation import process_request, process_release
 import config
+import asciichartpy as acp
+
+default_config = {"graph_width": 70, "panel_border": "#d600ff"}
 
 
 def create_layout():
@@ -23,8 +27,13 @@ def create_layout():
     )
 
     layout["main_panel"].split_row(
-        Layout(name="header", ratio=1),
+        Layout(name="headerAndGraph", ratio=1),
         Layout(name="body", ratio=2)
+    )
+
+    layout["headerAndGraph"].split_column(
+        Layout(name="header"),
+        Layout(name="graph")
     )
 
     return layout
@@ -46,8 +55,21 @@ def update_header(layout):
 
 # left head
 
+def draw_graph_panel(sent_data, graph_name, color):
+    acp_config = {
+        "width": default_config["graph_width"],
+        # "height": 10,
+        "format": "{:8.2f} CPUs",
+    }
+    return Panel(
+        Align.left(acp.plot(sent_data, acp_config), vertical="bottom"),
+        title=f"[bold][yellow]{graph_name}[/bold][/yellow]",
+        border_style="#d600ff",
+        style=color,
+    )
 
-def update_status(layout):
+
+def update_status(layout, recv_buffer):
     status_table = Table.grid(expand=True)
     status_table.add_column(justify="left")
     status_table.add_row(f"Total CPU: {config.TOTAL_CPU}")
@@ -57,14 +79,20 @@ def update_status(layout):
     status_table.add_row(f"Fraction Value: {config.fraction_value}")
     status_table.add_row(f"Low-usage Rate: {config.low_usage_rate}")
     status_table.add_row(f"Overbooking: {config.overbooking}")
+    recv_buffer.append(config.allocated_cpu)
 
     layout["status"].update(
         Panel(status_table, title="System Status", border_style="blue"))
+    
+    layout["graph"].update(
+                draw_graph_panel(recv_buffer, "Data Received Graph", "#00ff9f")
+            )
 
 
 def process_commands(cmds, layout):
     command_results = []  # 用于存储命令执行结果的列表
     log_entries = []      # 用于存储日志条目的列表
+    recv_buffer = []
 
     for cmd in cmds:
         # 确保 cmd 是一个字典
@@ -101,7 +129,7 @@ def process_commands(cmds, layout):
                           title="Logs", border_style="red")
         layout["logs"].update(log_panel)
 
-        update_status(layout)
+        update_status(layout, recv_buffer)
         time.sleep(1)
 
     # 如果有日志条目，最后再更新一次日志面板
