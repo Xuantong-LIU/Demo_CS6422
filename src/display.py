@@ -9,8 +9,6 @@ from rich.align import Align
 from resource_allocation import process_request, process_release
 import config
 import asciichartpy as acp
-# from rich.scroll import ScrollView
-# from textual.widgets import ScrollView
 
 
 console = Console()
@@ -60,7 +58,6 @@ def update_header(layout):
 
 
 # left head
-
 def draw_graph_panel(sent_data, graph_name, color):
     return Panel(
         Align.left(
@@ -92,19 +89,19 @@ def update_status(layout, recv_buffer):
 
 
 def process_commands(cmds, layout):
-    command_results = []  # 用于存储命令执行结果的列表
-    log_entries = []      # 用于存储日志条目的列表
+    command_results = []  # use to store the cmd output
+    log_entries = []      # use to store logs
     recv_buffer = []
     max_lines = 5
 
     for cmd in cmds:
-        # 确保 cmd 是一个字典
+        # make sure cmd is a dictionary type
         if not isinstance(cmd, dict):
             log_entry = f"Invalid command format: {cmd}"
-            log_entries.append(log_entry)  # 添加到日志列表
-            continue  # 跳过这个命令，继续处理下一个
+            log_entries.append(log_entry)  # add it to the log
+            continue
 
-        # 处理命令
+        # process the cmd
         if cmd.get("operation") == "request":
             response, is_error = process_request(
                 cmd.get("name"), cmd.get("number"))
@@ -113,27 +110,26 @@ def process_commands(cmds, layout):
                 cmd.get("name"), cmd.get("number"))
         else:
             log_entry = f"Unknown operation in command: {cmd}"
-            log_entries.append(log_entry)  # 添加到日志列表
-            continue  # 未知的操作，跳过
+            log_entries.append(log_entry)  # add it to the log
+            continue
 
-        # 如果是错误消息，则添加到日志列表，否则添加到命令结果列表
         if is_error:
             log_entries.append(response)
-            # 保持日志条目数量不超过最大行数
+
             if len(log_entries) > max_lines:
                 log_entries = log_entries[-max_lines:]
         else:
             command_results.append(response)
-            # 保持命令结果数量不超过最大行数
+
             if len(command_results) > max_lines:
                 command_results = command_results[-max_lines:]
 
-        # 更新界面的 "Command Output" 部分
+        # refresh Command Output
         body_panel = Panel("\n".join(command_results),
                            title="Command Output", border_style="yellow")
         layout["body"].update(body_panel)
 
-        # 更新界面的 "Logs" 部分
+        # refresh Logs
         log_panel = Panel("\n".join(log_entries),
                           title="Logs", border_style="red")
         layout["logs"].update(log_panel)
@@ -141,7 +137,6 @@ def process_commands(cmds, layout):
         update_status(layout, recv_buffer)
         time.sleep(1)
 
-        # 如果有日志条目，最后再更新一次日志面板
     if log_entries:
         log_panel = Panel("\n".join(log_entries),
                           title="Logs", border_style="red")

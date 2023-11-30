@@ -1,7 +1,7 @@
 import config
 
 
-# check user 是否具有release的权限
+# check if user has the permission to release
 def check_user_and_cpu(items_list, user, relasenum):
     for item in items_list:
         if item["username"] == user and item["realCPU"] == relasenum:
@@ -14,33 +14,30 @@ def process_request(user, request_cpu):
     config.remaining_cpu
     allocated_cpu_single = request_cpu
 
-    # 判断当前模式, 确定实际分配给user的cpu
+    # determine the current mode
     if config.overbooking == True:
         allocated_cpu_single *= config.fraction_value
 
-    # 当前不在overbooking 但执行完request有可能进入
+    # not in overbooking, but after this request maybe enter
     else:
         if config.allocated_cpu + allocated_cpu_single >= config.alarm_rate:
             allocated_cpu_single *= config.fraction_value
             config.overbooking = True
 
-    # 判断当前剩余资源是否足够分配
-    if config.remaining_cpu < allocated_cpu_single:  # 不足
+    # whether the reamining CPU is enough
+    if config.remaining_cpu < allocated_cpu_single:  # not enough
         return (f"ERR --> OUT OF RESORUCE: {user} request for {request_cpu} CPU, remaing CPU is {config.remaining_cpu}\n", True)
 
-    # 基于此次分配结果，对overbooking mode进行更新
-    # refresh_overbooking_request(allocated_cpu_single)
-
-    # 进行分配
+    # start the allocation
     config.remaining_cpu -= allocated_cpu_single
     config.allocated_cpu += allocated_cpu_single
 
-    # 记录userX 此次的request
+    # record userX's request
     item = {"username": user, "realCPU": request_cpu,
             "allocatedCPU": allocated_cpu_single}
     config.items_list.append(item)
 
-    # 返回分配成功结果
+    # return the successful info of this release
     return (f"OP --> {user} request for {request_cpu} CPU, CPU allocated: {allocated_cpu_single}, Overbooking: {config.overbooking}\n", False)
 
 
@@ -48,23 +45,22 @@ def process_request(user, request_cpu):
 def process_release(user, release_cpu):
     item = check_user_and_cpu(config.items_list, user, release_cpu)
 
-    # 判断该用户是否符合release条件
+    # check whether the user satisfy the requeiremnet of release
     if not item:
         return (f"ERR --> Fail TO RELEASE: {user} haven't requested for CPU successfully OR the number is not equal\n", True)
 
     else:
 
-        # 在list中获取实际的cpu数量(overbooking = true)
+        # get the num of realcpu from list(overbooking = true)
         if item["realCPU"] != item["allocatedCPU"]:
             release_cpu *= config.fraction_value
             if config.allocated_cpu - release_cpu <= config.low_usage_rate:
                 config.overbooking = False
 
-    
         config.remaining_cpu += release_cpu
         config.allocated_cpu -= release_cpu
 
         config.items_list.remove(item)
 
-        # 返回release 成功结果
+        # return result
         return (f"OP --> {user} released CPU: {release_cpu}\n", False)
