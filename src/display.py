@@ -47,7 +47,7 @@ def update_header(layout):
     header_text = (
         "Cloud Compute Resources Management System\n"
         "A simulation of CPU resource allocation and release.\n"
-        "Commands are processed from {'data.txt'}."
+        f"Commands are processed from {config.path}."
     )
     layout["header"].update(
         Panel(header_text, title="Welcome", border_style="bold green"))
