@@ -10,9 +10,6 @@ from resource_allocation import process_request, process_release
 import config
 import asciichartpy as acp
 
-default_config = {"graph_width": 70, "panel_border": "#d600ff"}
-
-
 def create_layout():
     layout = Layout()
 
@@ -27,12 +24,12 @@ def create_layout():
     )
 
     layout["main_panel"].split_row(
-        Layout(name="headerAndGraph", ratio=1),
-        Layout(name="body", ratio=2)
+        Layout(name="header", ratio=1),
+        Layout(name="bodyAndGraph", ratio=2)
     )
 
-    layout["headerAndGraph"].split_column(
-        Layout(name="header"),
+    layout["bodyAndGraph"].split_column(
+        Layout(name="body"),
         Layout(name="graph")
     )
 
@@ -52,20 +49,18 @@ def update_header(layout):
     log_panel = Panel("", title="Logs", border_style="red")
     layout["logs"].update(log_panel)
 
+    graph_panel = Panel("", title="Graph", border_style="red")
+    layout["logs"].update(graph_panel)
+
 
 # left head
 
 def draw_graph_panel(sent_data, graph_name, color):
-    acp_config = {
-        "width": default_config["graph_width"],
-        # "height": 10,
-        "format": "{:8.2f} CPUs",
-    }
     return Panel(
-        Align.left(acp.plot(sent_data, acp_config), vertical="bottom"),
+        Align.left(acp.plot(sent_data, {'min': 0, 'height': 10}), vertical="bottom"),
         title=f"[bold][yellow]{graph_name}[/bold][/yellow]",
-        border_style="#d600ff",
-        style=color,
+        border_style=color,
+        style="green",
     )
 
 
@@ -85,7 +80,7 @@ def update_status(layout, recv_buffer):
         Panel(status_table, title="System Status", border_style="blue"))
     
     layout["graph"].update(
-                draw_graph_panel(recv_buffer, "Data Received Graph", "#00ff9f")
+                draw_graph_panel(recv_buffer, "Graph", "red")
             )
 
 

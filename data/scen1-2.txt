@@ -13,19 +13,8 @@ user11 request 1 CPU
 user12 request 1000 CPU
 user13 request 1000 CPU
 user15 request 1000 CPU
+user16 request 1000 CPU
 user14 request 1 CPU
 user1 release 30 CPU
 user5 release 30 CPU
 user6 release 20 CPU
-
-request
-60
-user 
-10*fraction 
-
-70
-
-
-
-
-low_usage_rate
