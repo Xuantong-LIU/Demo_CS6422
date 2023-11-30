@@ -9,6 +9,11 @@ from rich.align import Align
 from resource_allocation import process_request, process_release
 import config
 import asciichartpy as acp
+# from rich.scroll import ScrollView
+# from textual.widgets import ScrollView
+
+
+console = Console()
 
 
 def create_layout():
@@ -90,6 +95,7 @@ def process_commands(cmds, layout):
     command_results = []  # 用于存储命令执行结果的列表
     log_entries = []      # 用于存储日志条目的列表
     recv_buffer = []
+    max_lines = 5
 
     for cmd in cmds:
         # 确保 cmd 是一个字典
@@ -113,8 +119,14 @@ def process_commands(cmds, layout):
         # 如果是错误消息，则添加到日志列表，否则添加到命令结果列表
         if is_error:
             log_entries.append(response)
+            # 保持日志条目数量不超过最大行数
+            if len(log_entries) > max_lines:
+                log_entries = log_entries[-max_lines:]
         else:
             command_results.append(response)
+            # 保持命令结果数量不超过最大行数
+            if len(command_results) > max_lines:
+                command_results = command_results[-max_lines:]
 
         # 更新界面的 "Command Output" 部分
         body_panel = Panel("\n".join(command_results),
@@ -129,7 +141,7 @@ def process_commands(cmds, layout):
         update_status(layout, recv_buffer)
         time.sleep(1)
 
-    # 如果有日志条目，最后再更新一次日志面板
+        # 如果有日志条目，最后再更新一次日志面板
     if log_entries:
         log_panel = Panel("\n".join(log_entries),
                           title="Logs", border_style="red")

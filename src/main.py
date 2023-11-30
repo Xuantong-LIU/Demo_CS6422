@@ -3,7 +3,6 @@ from rich.live import Live
 from cmd_parser import read_cmds_to_objects
 from display import create_layout, update_header, update_status, process_commands
 
-
 if __name__ == "__main__":
     console = Console()
     layout = create_layout()
