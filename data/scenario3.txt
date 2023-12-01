@@ -1,0 +1,6 @@
+user1 request 30 CPU
+user2 request 40 CPU
+user3 request 10 CPU
+user1 release 30 CPU
+user2 release 40 CPU
+user4 request 20 CPU

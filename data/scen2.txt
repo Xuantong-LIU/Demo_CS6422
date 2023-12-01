@@ -1,8 +1,0 @@
-user1 request 30 CPU
-user1 release 20 CPU
-user2 request 20 CPU
-user3 request 50 CPU
-
-
-
-

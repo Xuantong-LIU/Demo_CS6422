@@ -14,4 +14,4 @@ fraction_value = 0.8
 
 items_list = []
 
-path = "data/scen1-2.txt"
+path = "data/scenario1.txt"

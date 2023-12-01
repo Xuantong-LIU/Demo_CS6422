@@ -33,8 +33,8 @@ def create_layout():
     )
 
     layout["bodyAndGraph"].split_column(
-        Layout(name="body"),
-        Layout(name="graph")
+        Layout(name="body", ratio=2),
+        Layout(name="graph", ratio=1)
     )
 
     return layout
@@ -92,7 +92,7 @@ def process_commands(cmds, layout):
     command_results = []  # use to store the cmd output
     log_entries = []      # use to store logs
     recv_buffer = []
-    max_lines = 5
+    max_lines = 6
 
     for cmd in cmds:
         # make sure cmd is a dictionary type
