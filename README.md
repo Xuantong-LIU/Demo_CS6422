@@ -8,4 +8,5 @@ source venv/bin/activate
 # for Windows: venv\Scripts\activate
 pip3 install -r requirements.txt
 python3 src/main.py
+# Change scenarios by modifying src/config.py
 ```
